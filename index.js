@@ -12,7 +12,7 @@ app.use(express.json())
 
 
 const uri = `mongodb+srv://${process.env.MI_NAME}:${process.env.MI_PASS}@cluster0.1n864lk.mongodb.net/?retryWrites=true&w=majority`;
-// console.log(uri);
+// console.log(uri);+ 
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -28,6 +28,23 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     // Send a ping to confirm a successful connection
+
+    const database = client.db("Fashion-design");
+    const popularClass = database.collection("popular-classes");
+    const instructorClass = database.collection("instructor");
+
+//  popular classes 
+app.get("/popularClass" , async(req , res )=>{
+  const result =await popularClass.find().sort({"students":-1}).toArray()
+  res.send(result)
+})
+
+// Instructor 
+app.get("/instructorClass" , async(req , res )=>{
+  const result =await instructorClass.find().sort({"students":-1}).toArray()
+  res.send(result)
+})
+
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
