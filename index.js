@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 var cors = require('cors')
 const port =process.env.PORT ||5000
@@ -32,6 +32,7 @@ async function run() {
     const database = client.db("Fashion-design");
     const popularClass = database.collection("popular-classes");
     const instructorClass = database.collection("instructor");
+    const userCollection = database.collection("users");
 
 //  popular classes 
 app.get("/popularClass" , async(req , res )=>{
@@ -42,6 +43,20 @@ app.get("/popularClass" , async(req , res )=>{
 // Instructor 
 app.get("/instructorClass" , async(req , res )=>{
   const result =await instructorClass.find().sort({"students":-1}).toArray()
+  res.send(result)
+})
+
+// user 
+app.post("/user" ,async(req , res)=>{
+  const user = req.body ;
+  const query = { email:user.email };
+  const existingUser = await userCollection.findOne(query)
+      console.log( "existing user" ,existingUser);
+
+      if(existingUser){
+        return res.send({massage: " user already exists"})
+      }
+  const result = await userCollection.insertOne(user);
   res.send(result)
 })
 
