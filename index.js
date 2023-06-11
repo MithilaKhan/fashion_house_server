@@ -47,6 +47,13 @@ app.get("/instructorClass" , async(req , res )=>{
 })
 
 // user 
+
+app.get("/user" , async(req , res)=>{
+  const result = await userCollection.find().toArray()
+  res.send(result)
+})
+
+
 app.post("/user" ,async(req , res)=>{
   const user = req.body ;
   const query = { email:user.email };
@@ -59,6 +66,24 @@ app.post("/user" ,async(req , res)=>{
   const result = await userCollection.insertOne(user);
   res.send(result)
 })
+
+// make admin 
+app.patch('/user/admin/:id', async (req, res) => {
+  const id = req.params.id;
+  console.log(id);
+  const filter = { _id: new ObjectId(id) };
+  const updateDoc = {
+    $set: {
+      role: 'admin'
+    },
+  };
+
+  const result = await userCollection.updateOne(filter, updateDoc);
+  res.send(result);
+
+})
+
+
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
