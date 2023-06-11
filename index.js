@@ -3,6 +3,7 @@ const app = express()
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 var cors = require('cors')
+var jwt = require('jsonwebtoken');
 const port =process.env.PORT ||5000
 
 // middleware 
@@ -33,6 +34,13 @@ async function run() {
     const popularClass = database.collection("popular-classes");
     const instructorClass = database.collection("instructor");
     const userCollection = database.collection("users");
+
+    app.post('/jwt', (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
+
+      res.send({ token })
+    })
 
 //  popular classes 
 app.get("/popularClass" , async(req , res )=>{
@@ -81,7 +89,23 @@ app.patch('/user/admin/:id', async (req, res) => {
   const result = await userCollection.updateOne(filter, updateDoc);
   res.send(result);
 
-})
+}) 
+
+// make Instructor 
+app.patch('/user/instructor/:id', async (req, res) => {
+  const id = req.params.id;
+  console.log(id);
+  const filter = { _id: new ObjectId(id) };
+  const updateDoc = {
+    $set: {
+      role: 'instructor'
+    },
+  };
+
+  const result = await userCollection.updateOne(filter, updateDoc);
+  res.send(result);
+
+}) 
 
 
 
