@@ -358,20 +358,7 @@ async function run() {
       const result = await classesCollection.updateOne(filter, update);
       res.send(result);
     });
-    app.get('/payments', verifyJWT, async (req, res) => {
-      const email = req.query.email;
-      console.log(email, 353)
-      if (!email) {
-        return res.send([]);
-      }
-      const decodedEmail = req.decoded.email;
-      if (email !== decodedEmail) {
-        return res.status(403).send({ error: true, message: 'forbidden access' });
-      }
-      const query = { email: email }
-      const result = await paymentCollection.find(query).sort({ date: -1 }).toArray()
-      res.send(result);
-    })
+   
 
     //All instructors get data
     app.get(`/allInstructors/:text`, async (req, res) => {
@@ -380,7 +367,11 @@ async function run() {
       const result = await usersCollection.find({ role: req.params.text }).toArray();
       res.send(result);
     })
-    
+    app.get(`/popularInstructors/:text`, async (req, res) => {
+      const limitInstructor = 6;
+      const result = await usersCollection.find({ role: req.params.text }).limit(limitInstructor).toArray();
+      res.send(result);
+    })
 
 
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
