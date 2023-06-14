@@ -373,7 +373,14 @@ async function run() {
       res.send(result);
     })
 
-  
+    //All instructors get data
+    app.get(`/allInstructors/:text`, async (req, res) => {
+      console.log(req.params.text);
+
+      const result = await usersCollection.find({ role: req.params.text }).toArray();
+      res.send(result);
+    })
+    
 
 
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
