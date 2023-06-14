@@ -337,7 +337,27 @@ async function run() {
     });
 
 
-    
+    app.patch("/all-classes/seats/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const filter = { _id: new ObjectId(id) };
+      const updateClass = await classesCollection.findOne(filter);
+      if (!updateClass) {
+        // Handle case when the seat is not found
+        console.log("Seat not found");
+        return;
+      }
+      const updateEnrollStudent = updateClass.student + 1;
+      const updatedAvailableSeats = updateClass.seats - 1;
+      const update = {
+        $set: {
+          seats: updatedAvailableSeats,
+          student: updateEnrollStudent,
+        },
+      };
+      const result = await classesCollection.updateOne(filter, update);
+      res.send(result);
+    });
     app.get('/payments', verifyJWT, async (req, res) => {
       const email = req.query.email;
       console.log(email, 353)
